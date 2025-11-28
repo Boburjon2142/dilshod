@@ -1,0 +1,32 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+<div class="product-details">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <div>
+            <h1 class="h5 mb-1">{{ is_edit|yesno:"Mahsulotni tahrirlash,Yangi mahsulot qo‘shish" }}</h1>
+            <p class="text-muted small mb-0">Narx va ombor maʼlumotlarini kiriting.</p>
+        </div>
+        <a class="edit-btn" href="{% url 'product_list' %}"><i class="fas fa-arrow-left"></i> Orqaga</a>
+    </div>
+
+    <form method="post" novalidate class="row g-3">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger small mt-1">
+                        {{ field.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <div class="col-12 d-flex justify-content-end gap-2">
+            <a class="btn btn-light" href="{% url 'product_list' %}">Bekor qilish</a>
+            <button type="submit" class="edit-btn">Saqlash</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

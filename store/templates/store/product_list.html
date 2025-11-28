@@ -1,0 +1,105 @@
+{% extends "store/base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="dashboard">
+    <section class="main-content">
+        <div class="search-section">
+            <h2><i class="fas fa-search"></i> Sarlavha, muallif yoki SKU bo‘yicha qidirish</h2>
+            <form class="search-box" method="get">
+                <input type="text"
+                       name="q"
+                       value="{{ query }}"
+                       placeholder="Qidirish..."
+                       data-filter-table="#productTable tbody tr"
+                       aria-label="Mahsulotlarni qidirish">
+                <button type="submit"><i class="fas fa-search"></i> Qidirish</button>
+                {% if query %}
+                    <a class="btn btn-link-like" href="{% url 'product_list' %}"><i class="fas fa-times"></i> Tozalash</a>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <h3><i class="fas fa-box-open"></i> Jami mahsulotlar</h3>
+                <div class="stat-value">{{ totals.total_products }}</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-cubes"></i> Jami dona</h3>
+                <div class="stat-value">{{ totals.total_quantity }}</div>
+            </div>
+        <div class="stat-card">
+            <h3><i class="fas fa-wallet"></i> Jami xarid qiymati</h3>
+            <div class="stat-value">{{ totals.total_purchase_value|floatformat:2|intcomma }} so‘m</div>
+        </div>
+        <div class="stat-card">
+            <h3><i class="fas fa-tags"></i> Jami sotuv qiymati</h3>
+            <div class="stat-value">{{ totals.total_sale_value|floatformat:2|intcomma }} so‘m</div>
+        </div>
+        <div class="stat-card">
+            <h3><i class="fas fa-chart-line"></i> Jami foyda</h3>
+            <div class="stat-value {% if totals.total_profit < 0 %}negative{% else %}positive{% endif %}">
+                {{ totals.total_profit|floatformat:2|intcomma }} so‘m
+            </div>
+        </div>
+        </div>
+
+        <div class="product-details">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <h2 class="mb-0"><i class="fas fa-boxes"></i> Mahsulotlar ro‘yxati</h2>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a class="edit-btn" href="{% url 'product_create' %}"><i class="fas fa-plus"></i> Yangi mahsulot</a>
+                    <a class="edit-btn" href="{% url 'product_export_txt' %}{% if query %}?q={{ query }}{% endif %}">
+                        <i class="fas fa-file-alt"></i> TXT yuklab olish
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-wrapper table-responsive mt-4">
+                <table class="table table-hover align-middle mb-0" id="productTable">
+                    <thead>
+                    <tr>
+                        <th scope="col">Sarlavha</th>
+                        <th scope="col">Muallif</th>
+                        <th scope="col">SKU</th>
+                        <th scope="col">Sotib olish narxi</th>
+                        <th scope="col">Sotish narxi</th>
+                        <th scope="col">Miqdor</th>
+                        <th scope="col">Foyda / dona</th>
+                        <th scope="col">Jami foyda</th>
+                        <th scope="col" class="text-end">Amallar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for product in products %}
+                        <tr class="js-product-row">
+                            <td class="fw-semibold">{{ product.title }}</td>
+                            <td>{{ product.author|default:"—" }}</td>
+                            <td><span class="badge bg-light text-dark border">{{ product.sku }}</span></td>
+                            <td>{{ product.purchase_price|floatformat:2|intcomma }} so‘m</td>
+                            <td>{{ product.sale_price|floatformat:2|intcomma }} so‘m</td>
+                            <td>{{ product.quantity }}</td>
+                            <td class="{% if product.profit_per_item < 0 %}text-danger{% else %}text-success{% endif %}">{{ product.profit_per_item|floatformat:2|intcomma }} so‘m</td>
+                            <td class="fw-semibold {% if product.total_profit < 0 %}text-danger{% else %}text-success{% endif %}">{{ product.total_profit|floatformat:2|intcomma }} so‘m</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm action-btn action-btn-edit" href="{% url 'product_update' product.pk %}"><i class="fas fa-edit"></i></a>
+                                <a class="btn btn-sm action-btn action-btn-delete js-delete-link"
+                                   href="{% url 'product_delete' product.pk %}"
+                                   data-confirm="Mahsulotni o‘chirasizmi?">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">Mahsulotlar topilmadi. Birinchi tovarni qo‘shing!</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

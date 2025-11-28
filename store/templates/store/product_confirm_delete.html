@@ -1,0 +1,14 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+<div class="product-details">
+    <h1 class="h5 mb-3"><i class="fas fa-trash"></i> Mahsulotni o‘chirishni tasdiqlaysizmi?</h1>
+    <p class="mb-4">Siz <strong>{{ product.title }}</strong> ({{ product.sku }}) ni o‘chirmoqchisiz.</p>
+    <form method="post" class="d-flex flex-wrap gap-2">
+        {% csrf_token %}
+        <button type="submit" class="edit-btn danger-btn text-decoration-none"><i class="fas fa-check"></i> Ha, o‘chirilsin</button>
+        <a class="btn btn-light" href="{% url 'product_list' %}">Bekor qilish</a>
+    </form>
+</div>
+{% endblock %}
+
